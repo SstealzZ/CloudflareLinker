@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./front
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - cloudflare-linker-network
+
+  backend:
+    build:
+      context: ./fastapi
+    container_name: fastapi
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./fastapi:/app
+      - db-data:/app/data
+    networks:
+      - cloudflare-linker-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+networks:
+  cloudflare-linker-network:
+
+volumes:
+  db-data: 
