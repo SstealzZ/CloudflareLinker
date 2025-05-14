@@ -5,7 +5,8 @@ services:
       dockerfile: Dockerfile
       args:
         - FRONTEND_PORT=${FRONTEND_PORT}
-        - REACT_APP_API_URL=${REACT_APP_API_URL}
+        - API_HOST=${API_HOST}
+        - NODE_ENV=${NODE_ENV:-production}
     container_name: cloudflare-linker-frontend
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
@@ -15,7 +16,9 @@ services:
       - cloudflare-linker-network
     restart: unless-stopped
     environment:
-      - PORT=${FRONTEND_PORT}
+      - FRONTEND_PORT=${FRONTEND_PORT}
+      - API_HOST=${API_HOST}
+      - NODE_ENV=${NODE_ENV:-production}
 
   backend:
     build:
