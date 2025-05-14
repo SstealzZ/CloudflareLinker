@@ -2,27 +2,35 @@ FROM node:18-alpine as build
 
 WORKDIR /app
 
-# Install dependencies
-COPY package.json package-lock.json* ./
-RUN npm ci
+# Récupération des arguments de construction
+ARG REACT_APP_API_URL
 
-# Copy all files
+# Définition des variables d'environnement pour la phase de build
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
+COPY package*.json ./
+
+RUN npm install
+
 COPY . .
 
-# Build app
 RUN npm run build
 
-# Production image
-FROM nginx:alpine
+FROM node:18-alpine
 
-# Copy built app to nginx
-COPY --from=build /app/build /usr/share/nginx/html
+WORKDIR /app
 
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Récupération des arguments de construction
+ARG FRONTEND_PORT
 
-# Expose port
-EXPOSE 80
+# Définition des variables d'environnement
+ENV PORT=$FRONTEND_PORT
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"] 
+RUN npm install -g serve
+
+COPY --from=build /app/build ./build
+
+# Exposition du port dynamique
+EXPOSE $PORT
+
+CMD ["sh", "-c", "serve -s build -l $PORT"] 
