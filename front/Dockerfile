@@ -14,8 +14,11 @@ ENV NODE_ENV=production
 # Copie des fichiers de dépendances
 COPY package*.json ./
 
-# Installation des dépendances
-RUN npm install
+# Installation des dépendances (incluant les devDependencies nécessaires pour le build)
+RUN npm install --include=dev
+
+# Copie des fichiers de configuration avant le code source
+COPY postcss.config.js tailwind.config.js vite.config.js ./
 
 # Copie du code source
 COPY . .
