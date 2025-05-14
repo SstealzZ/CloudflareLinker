@@ -27,7 +27,7 @@ Une application web minimaliste pour automatiser la gestion des DNS via l'API Cl
 ## Prérequis
 
 - Docker et Docker Compose (pour l'installation avec Docker)
-- Python 3.11+ (pour l'installation manuelle du backend)
+- Python 3.12+ (pour l'installation manuelle du backend)
 - Node.js 18+ (pour l'installation manuelle du frontend)
 - Clé API Cloudflare
 
@@ -41,68 +41,23 @@ git clone https://github.com/votreusername/cloudflare-linker.git
 cd cloudflare-linker
 ```
 
-2. Configuration des variables d'environnement:
-
-Deux méthodes sont possibles:
-   
-a) Créer un fichier `.env` dans le dossier `fastapi` avec le contenu suivant:
+2. Créez un fichier `.env` basé sur `.env.example` avec les variables d'environnement requises :
+```bash
+cp .env.example .env
+# Puis modifiez le fichier .env avec vos propres valeurs
 ```
-# Clé d'encryption pour chiffrer les données sensibles (générée aléatoirement)
-ENCRYPTION_KEY="votre_clé_d'encryption"
-
-# Configuration de l'API
-API_V1_STR="/api/v1"
-
-# Clé secrète pour la génération de jetons JWT (ne pas modifier une fois configurée)
-SECRET_KEY="votre_clé_secrète"
-
-# Durée de validité des jetons d'accès (en minutes)
-ACCESS_TOKEN_EXPIRE_MINUTES=10080  # 7 jours
-
-# Algorithme utilisé pour les jetons JWT
-ALGORITHM="HS256"
-
-# Configuration CORS (origines autorisées séparées par des virgules)
-CORS_ORIGINS="http://localhost:3000,http://localhost:27823"
-```
-
-b) Définir les variables d'environnement lors du lancement (voir commande ci-dessous)
 
 3. Démarrez l'application avec Docker Compose :
 ```bash
-# Avec les variables d'environnement définies dans le fichier .env
 docker-compose up -d
-
-# OU en spécifiant les variables directement
-SECRET_KEY="votre_clé_secrète" ENCRYPTION_KEY="votre_clé_d'encryption" docker-compose up -d
 ```
 
 4. Accédez à l'application dans votre navigateur :
 ```
-http://localhost:27823
+http://localhost:3000
 ```
 
-### Option 2: Déploiement avec Portainer
-
-1. Accédez à votre interface Portainer et créez une nouvelle stack
-
-2. Copiez le contenu du fichier `docker-compose.yml` dans l'éditeur
-
-3. Dans la section "Environment variables" de Portainer, définissez au minimum ces variables:
-   - `SECRET_KEY` - Clé secrète pour les tokens JWT
-   - `ENCRYPTION_KEY` - Clé pour le chiffrement des données sensibles
-
-4. Autres variables optionnelles que vous pouvez personnaliser:
-   - `DATABASE_URL` (par défaut: sqlite:///data/cloudflare_linker.db)
-   - `API_V1_STR` (par défaut: /api/v1)
-   - `ACCESS_TOKEN_EXPIRE_MINUTES` (par défaut: 10080)
-   - `ALGORITHM` (par défaut: HS256)
-   - `CORS_ORIGINS` (par défaut: *)
-   - `FIRST_TIME_SETUP` (par défaut: false)
-
-5. Déployez la stack et accédez à l'application à l'URL: `http://votre-hôte:27823`
-
-### Option 3: Installation manuelle (pour développement)
+### Option 2: Installation manuelle (pour développement)
 
 #### Backend
 1. Accédez au répertoire backend:
@@ -121,7 +76,7 @@ python -m venv venv
 source venv/bin/activate
 ```
 
-3. Créez un fichier `.env` dans le dossier `fastapi/app/core` avec le contenu décrit plus haut
+3. Créez un fichier `.env` à la racine du projet basé sur `.env.example`
 
 4. Installez les dépendances:
 ```bash
@@ -154,13 +109,33 @@ npm start
 http://localhost:3000
 ```
 
-## Ports utilisés
+## Variables d'environnement
 
-L'application utilise des ports dans la plage 20000-30000 pour éviter les conflits:
-- **27823** : Interface utilisateur frontend (nginx)
-- **24327** : API backend (FastAPI)
+Les variables suivantes doivent être configurées dans le fichier `.env` :
 
-Pour modifier ces ports, ajustez les mappings dans le fichier `docker-compose.yml`.
+```
+# Configuration des ports
+BACKEND_PORT=8000        # Port pour le backend FastAPI
+FRONTEND_PORT=3000       # Port pour le frontend React
+
+# URL de l'API pour le frontend
+REACT_APP_API_URL=http://localhost:8000
+
+# Clé d'encryption pour chiffrer les données sensibles
+ENCRYPTION_KEY=votre_clé_d_encryption
+
+# Configuration de l'API
+API_V1_STR=/api/v1
+
+# Clé secrète pour la génération de jetons JWT
+SECRET_KEY=votre_clé_secrète
+
+# Durée de validité des jetons d'accès (en minutes)
+ACCESS_TOKEN_EXPIRE_MINUTES=10080  # 7 jours
+
+# Algorithme utilisé pour les jetons JWT
+ALGORITHM=HS256
+```
 
 ## Première configuration
 
@@ -174,6 +149,7 @@ Lors de la première connexion, vous devrez:
 ```
 cloudflare-linker/
 ├── docker-compose.yml       # Configuration Docker Compose
+├── .env.example             # Exemple de fichier de variables d'environnement
 ├── fastapi/                 # Backend (FastAPI)
 │   ├── app/                 # Code source du backend
 │   │   ├── api/             # Endpoints API
@@ -194,8 +170,7 @@ cloudflare-linker/
     │   ├── lib/             # Utilitaires
     │   ├── pages/           # Pages de l'application
     │   └── App.js           # Composant principal
-    ├── Dockerfile           # Configuration Docker pour le frontend
-    └── nginx.conf           # Configuration Nginx
+    └── Dockerfile           # Configuration Docker pour le frontend
 ```
 
 ## Sécurité
