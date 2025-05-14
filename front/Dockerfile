@@ -26,24 +26,29 @@ COPY . .
 # Construction de l'application
 RUN npm run build
 
-FROM node:18-alpine
-
-WORKDIR /app
+# Étape 2: Servir l'application avec Nginx
+FROM nginx:alpine
 
 # Récupération des arguments de construction
 ARG FRONTEND_PORT
+ARG API_HOST
 
 # Définition des variables d'environnement
 ENV PORT=$FRONTEND_PORT
+ENV API_HOST=$API_HOST
 
-# Installation de serve
-RUN npm install -g serve
+# Copie des fichiers de build depuis l'étape de build
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copie des fichiers de build
-COPY --from=build /app/dist ./dist
+# Copie de la configuration nginx
+COPY nginx.conf /etc/nginx/templates/default.conf.template
+
+# Configuration de l'environnement Nginx
+RUN echo 'env PORT=$PORT;' >> /etc/nginx/nginx.conf && \
+    echo 'env API_HOST=$API_HOST;' >> /etc/nginx/nginx.conf
 
 # Exposition du port
 EXPOSE $PORT
 
-# Commande par défaut
-CMD ["sh", "-c", "serve -s dist -l $PORT"]
+# Démarrage de Nginx
+CMD [ "sh", "-c", "envsubst '$PORT $API_HOST' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'" ]

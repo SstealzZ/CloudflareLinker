@@ -16,7 +16,7 @@ services:
       - cloudflare-linker-network
     restart: unless-stopped
     environment:
-      - FRONTEND_PORT=${FRONTEND_PORT}
+      - PORT=${FRONTEND_PORT}
       - API_HOST=http://backend:${BACKEND_PORT}
       - NODE_ENV=${NODE_ENV:-production}
 
