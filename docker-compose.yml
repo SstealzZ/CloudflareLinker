@@ -4,28 +4,48 @@ services:
   frontend:
     build:
       context: ./front
+    container_name: cloudflare-linker-frontend
     ports:
       - "80:80"
     depends_on:
       - backend
     networks:
       - cloudflare-linker-network
+    restart: unless-stopped
 
   backend:
     build:
       context: ./fastapi
-    container_name: fastapi
+    container_name: cloudflare-linker-backend
     ports:
       - "8000:8000"
     volumes:
       - ./fastapi:/app
       - db-data:/app/data
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-sqlite:///data/cloudflare_linker.db}
+      - API_V1_STR=${API_V1_STR:-/api/v1}
+      - SECRET_KEY=${SECRET_KEY}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES:-10080}
+      - ALGORITHM=${ALGORITHM:-HS256}
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+      - FIRST_TIME_SETUP=${FIRST_TIME_SETUP:-false}
     networks:
       - cloudflare-linker-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 networks:
   cloudflare-linker-network:
+    driver: bridge
 
 volumes:
-  db-data: 
+  db-data:
+    driver: local 
