@@ -6,15 +6,16 @@ ARG BACKEND_PORT
 # Définition des variables d'environnement
 ENV PORT=$BACKEND_PORT
 
-WORKDIR /app
+WORKDIR /code
 
-COPY requirements.txt .
-
+# Install dependencies
+COPY ./requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Copy application
+COPY ./ /code/
 
-# Exposition du port dynamique
-EXPOSE $PORT
+# Set Python path to include current directory
+ENV PYTHONPATH="${PYTHONPATH}:/code"
 
 CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port $PORT"] 

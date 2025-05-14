@@ -2,14 +2,8 @@ FROM node:18-alpine as build
 
 WORKDIR /app
 
-# Récupération des arguments de construction
-ARG REACT_APP_API_URL
-
-# Définition des variables d'environnement pour la phase de build
-ENV REACT_APP_API_URL=$REACT_APP_API_URL
-
-COPY package*.json ./
-
+# Install dependencies with npm install instead of npm ci
+COPY package.json package-lock.json* ./
 RUN npm install
 
 COPY . .
