@@ -20,8 +20,8 @@ services:
     ports:
       - "24327:8000"
     volumes:
-      - ./fastapi:/app
-      - db-data:/app/data
+      - ./fastapi:/code
+      - db-data:/code/data
     environment:
       - DATABASE_URL=${DATABASE_URL:-sqlite:///data/cloudflare_linker.db}
       - API_V1_STR=${API_V1_STR:-/api/v1}
@@ -39,6 +39,7 @@ services:
       retries: 3
       start_period: 10s
     restart: unless-stopped
+    working_dir: /code
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
 
 networks:
