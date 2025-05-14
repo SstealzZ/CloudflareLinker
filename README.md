@@ -63,7 +63,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=10080  # 7 jours
 ALGORITHM="HS256"
 
 # Configuration CORS (origines autorisées séparées par des virgules)
-CORS_ORIGINS="http://localhost:3000,http://localhost"
+CORS_ORIGINS="http://localhost:3000,http://localhost:27823"
 ```
 
 b) Définir les variables d'environnement lors du lancement (voir commande ci-dessous)
@@ -79,7 +79,7 @@ SECRET_KEY="votre_clé_secrète" ENCRYPTION_KEY="votre_clé_d'encryption" docker
 
 4. Accédez à l'application dans votre navigateur :
 ```
-http://localhost
+http://localhost:27823
 ```
 
 ### Option 2: Déploiement avec Portainer
@@ -100,7 +100,7 @@ http://localhost
    - `CORS_ORIGINS` (par défaut: *)
    - `FIRST_TIME_SETUP` (par défaut: false)
 
-5. Déployez la stack et accédez à l'application à l'URL configurée dans Portainer
+5. Déployez la stack et accédez à l'application à l'URL: `http://votre-hôte:27823`
 
 ### Option 3: Installation manuelle (pour développement)
 
@@ -153,6 +153,14 @@ npm start
 ```
 http://localhost:3000
 ```
+
+## Ports utilisés
+
+L'application utilise des ports dans la plage 20000-30000 pour éviter les conflits:
+- **27823** : Interface utilisateur frontend (nginx)
+- **24327** : API backend (FastAPI)
+
+Pour modifier ces ports, ajustez les mappings dans le fichier `docker-compose.yml`.
 
 ## Première configuration
 
