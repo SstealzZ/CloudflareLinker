@@ -23,6 +23,22 @@ export default defineConfig({
         target: process.env.API_HOST || `http://localhost:${process.env.BACKEND_PORT || '8000'}`,
         changeOrigin: true,
         secure: false,
+        debug: true,
+        rewrite: (path) => {
+          console.log(`[Proxy] Rewriting path: ${path}`);
+          return path;
+        },
+        configure: (proxy, options) => {
+          proxy.on('error', (err, req, res) => {
+            console.log('[Proxy Error]', err);
+          });
+          proxy.on('proxyReq', (proxyReq, req, res) => {
+            console.log(`[Proxy Request] ${req.method} ${req.url}`);
+          });
+          proxy.on('proxyRes', (proxyRes, req, res) => {
+            console.log(`[Proxy Response] ${req.method} ${req.url} - Status: ${proxyRes.statusCode}`);
+          });
+        }
       }
     }
   },
@@ -47,5 +63,6 @@ export default defineConfig({
         '.js': 'jsx',
       },
     },
-  }
+  },
+  logLevel: 'info',
 }) 

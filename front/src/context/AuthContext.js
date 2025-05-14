@@ -9,7 +9,7 @@ const AuthContext = createContext(null);
 /**
  * API URL from environment or default
  */
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
+const API_URL = process.env.REACT_APP_API_URL || '/api/v1';
 
 /**
  * AuthProvider component for wrapping the application with authentication context
