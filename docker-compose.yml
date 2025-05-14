@@ -1,31 +1,36 @@
 version: '3.8'
 
 services:
-  frontend:
-    build:
-      context: ./front
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-    networks:
-      - cloudflare-linker-network
-
   backend:
     build:
       context: ./fastapi
-    container_name: fastapi
+      dockerfile: Dockerfile
+      args:
+        - BACKEND_PORT=${BACKEND_PORT}
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     volumes:
       - ./fastapi:/app
-      - db-data:/app/data
-    networks:
-      - cloudflare-linker-network
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+      - /app/venv
+    environment:
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - API_V1_STR=${API_V1_STR}
+      - SECRET_KEY=${SECRET_KEY}
+      - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
+      - ALGORITHM=${ALGORITHM}
+      - PORT=${BACKEND_PORT}
+    command: uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT} --reload
 
-networks:
-  cloudflare-linker-network:
-
-volumes:
-  db-data: 
+  frontend:
+    build:
+      context: ./front
+      dockerfile: Dockerfile
+      args:
+        - FRONTEND_PORT=${FRONTEND_PORT}
+        - REACT_APP_API_URL=${REACT_APP_API_URL}
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    environment:
+      - PORT=${FRONTEND_PORT}
+    depends_on:
+      - backend 
