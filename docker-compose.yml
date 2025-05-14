@@ -30,7 +30,6 @@ services:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     volumes:
       - ./fastapi:/app
-      - /app/venv
     environment:
       - ENCRYPTION_KEY=${ENCRYPTION_KEY}
       - API_V1_STR=${API_V1_STR}
