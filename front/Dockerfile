@@ -9,6 +9,7 @@ ARG API_HOST
 # Définition des variables d'environnement
 ENV FRONTEND_PORT=$FRONTEND_PORT
 ENV API_HOST=$API_HOST
+ENV NODE_ENV=production
 
 # Copie des fichiers de dépendances
 COPY package*.json ./
