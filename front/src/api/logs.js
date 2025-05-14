@@ -3,7 +3,7 @@ import axios from 'axios';
 /**
  * API URL from environment or default
  */
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
+const API_URL = process.env.REACT_APP_API_URL || '/api/v1';
 
 /**
  * Get user logs
