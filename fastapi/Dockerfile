@@ -6,6 +6,9 @@ ARG BACKEND_PORT
 # Définition des variables d'environnement
 ENV PORT=$BACKEND_PORT
 
+# Installation de curl pour le healthcheck
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY requirements.txt .
