@@ -6,7 +6,7 @@ services:
       context: ./front
     container_name: cloudflare-linker-frontend
     ports:
-      - "80:80"
+      - "27823:80"
     depends_on:
       - backend
     networks:
@@ -18,7 +18,7 @@ services:
       context: ./fastapi
     container_name: cloudflare-linker-backend
     ports:
-      - "8000:8000"
+      - "24327:8000"
     volumes:
       - ./fastapi:/app
       - db-data:/app/data
